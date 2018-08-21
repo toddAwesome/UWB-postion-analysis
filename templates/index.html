@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Test</title>
-    <link rel ="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-    <h1>Hello There</h1>
+    <title>Position Data Analysis</title>
 </head>
 <body>
-
+<h1>Position Data Analysis</h1>
+<form id="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" accept="text/csv" multiple>
+    <input type="submit" value="send">
+</form>
 </body>
 </html>

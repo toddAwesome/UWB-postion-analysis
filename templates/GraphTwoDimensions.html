@@ -1,6 +1,13 @@
 <!DOCTYPE html>
-<ul>
-    {% for item in food %}
-        <li>{{ item }}</li>
-    {% endfor%}
-</ul>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+    <link rel ="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <h1>Two dimensional Postion analysis</h1>
+    {{ plt.show() }}
+</head>
+<body>
+    <img src="data:image/png;base64,{{ plot_url }}" width="20" height = "20" alt="graph" />
+</body>
+</html>

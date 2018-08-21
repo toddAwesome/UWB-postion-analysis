@@ -1,12 +1,12 @@
 import os
 import time
-import urllib
-import pandas as pd
-import matplotlib.pyplot as plt
-import io
-import base64
 
+import matplotlib.pyplot as plt
+import mpld3
+import pandas as pd
 from flask import Flask, render_template, request, session
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
 
 __author__ = 'Todd Robbins'
 
@@ -16,13 +16,12 @@ nameFile = ""
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
-# https://www.youtube.com/watch?v=bxFaa_FNdL4
 @app.route('/')
-def index():
-    return render_template("index.html")
+def home():
+    return render_template("home.html")
 
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['GET', 'POST'])
 def upload():
     target = os.path.join(APP_ROOT, 'csv/')
     print(target)
@@ -44,6 +43,7 @@ def upload():
 
 def data_analyzer(filename):
     data = pd.read_csv(filename)
+    print(data)
     dataType = list(data.columns.values)
     chartID = filename[4:]
     # Dimensions of the data set
@@ -61,22 +61,37 @@ def data_analyzer(filename):
 
 @app.route('/2DPositionAnalysis', methods=['GET', 'POST'])
 def two_dimension_graph(data, chartID):
-    plt.plot(x=data['x'], y=data['y'])
-    img = io.BytesIO()
-    plt.savefig(img, format='png')  # save figure to the buffer
-    img.seek(0)  # rewind your buffer
-    plot_data = urllib.quote(base64.b64encode(img.read()).decode())
+    fig, ax = plt.subplots()
+    color = 15
+    size = 2
+
+    ax.scatter(data['x'], data['y'], c=color, s=500 * size, alpha=0.3)
+    ax.grid(color='lightgray', alpha=0.7)
+    ax.set_title(chartID + "Scatter Plot", size=20)
 
     # show graph of data to save/use for reference
-    return render_template("GraphTwoDimensions.html", plot_url=plot_data)
+    mpld3.show()
 
 
 @app.route('/3DPositionAnalysis', methods=['GET', 'POST'])
 def three_dimension_graph(data, chartID):
-    return render_template("GraphThreeDimensions.html")
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(data['x'], data['y'], data['z'], c='b', marker='o')
+    ax.set_xlabel('x axis')
+    ax.set_ylabel('y axis')
+    ax.set_zlabel('z axis')
+    mpld3.show()
+
+    while not os.path.exists('templates/scatterXYZ.html'):
+        time.sleep(1)  # what for files to upload
+
+
+@app.route('/about', methods=['GET', 'POST'])
+def about():
+    return render_template('about.html')
 
 
 if __name__ == '__main__':
     session.clear()
-    app.run(debug=True)
-# app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=8080)

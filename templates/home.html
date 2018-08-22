@@ -8,4 +8,10 @@
             <input type="submit" value="send">
         </form>
 	</div>
+    <div class="uploaded">
+        <h4>Plot will be displayed below</h4>
+        {% for elem in graph %}
+            {{elem | safe}}
+        {% endfor %}
+    </div>
 {% endblock %}
